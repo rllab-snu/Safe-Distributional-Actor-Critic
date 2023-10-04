@@ -1,0 +1,184 @@
+<mujoco model="laikago">
+    <compiler angle="radian" meshdir="meshes/" balanceinertia="true" />
+
+    <size njmax="500" nconmax="100" />
+    <option gravity="0 0 -9.8"/>
+	<option timestep="0.002" impratio="5" solver="Newton" cone="elliptic"> 
+		<flag warmstart="enable"></flag>
+	</option>
+
+    <default>
+        <geom contype="2" conaffinity="1" friction="0.6 0.3 0.3" rgba="0.5 0.6 0.7 1" margin="0.001" group="0"/>
+        <light castshadow="false" diffuse="1 1 1" />
+        <motor ctrlrange="-40.0 40.0" ctrllimited="true" />
+        <camera fovy="60" />
+        <joint armature="0.01" frictionloss="0.02" />
+    </default>
+
+    <asset>
+        <!--Meshes-->
+        <mesh name="trunk" file="trunk.stl" />
+        <mesh name="hip" file="hip.stl" />
+        <mesh name="thigh_mirror" file="thigh_mirror.stl" />
+        <mesh name="calf" file="calf.stl" />
+        <mesh name="thigh" file="thigh.stl" />
+
+        <!--Textures-->
+        <texture type="skybox" builtin="gradient" rgb1="0.527 0.582 0.906" rgb2="0.1 0.1 0.35" width="800" height="800" markrgb="1 1 1" mark="random" random="0.001"/>
+        <texture name="plane" type="2d" builtin="flat" rgb1="1 1 1" rgb2="1 1 1" width="512" height="512" mark="cross" markrgb="0 0 0"/>
+        <texture name="floor_tex" type="2d" builtin="checker" rgb1=".4 .5 .6" rgb2=".1 .2 .3" width="800" height="800" />
+
+        <!--Materials-->
+        <material name="plane" reflectance="0.0" texture="plane" texrepeat="3 3" texuniform="true"/>
+        <material name="floor_mat" texture="floor_tex" texrepeat="2 2" shininess="0.8" specular="0.9" reflectance="0.0" />
+    </asset>
+
+    <worldbody>
+        <!-- light -->
+        <light cutoff="100" diffuse="1 1 1" dir="0 0 -1" directional="true" exponent="1" pos="0 0 0.5" specular="0 0 0" castshadow="true"/>
+
+        <!-- Floor Property -->
+        <geom name='floor' material="floor_mat" friction="1.0 1.0 0.0001" pos='0 0 0' size='0.0 0.0 0.1'  type='plane' condim="3" contype="1" conaffinity="4"/>
+
+		<!-- camera: fixed view -->
+        <camera name="track" mode="trackcom" pos="0 -1.3 1.6" xyaxes="1 0 0 0 0.707 0.707"/>
+
+		<!-- Robot -->
+        <body name="torso" pos="0 0 0.6">
+            <site name="robot" pos="0 0 0"/>
+            <joint type="free" name="world_to_torso_j" damping="0" stiffness="0" armature="0" frictionloss="0" />
+            <inertial pos="0.002284 -4.1e-05 0.025165" quat="-0.00605949 0.710803 -0.00734309 0.703327" mass="13.733" diaginertia="0.254491 0.250684 0.0733281" />
+            <geom name="torso_vis" type="mesh" mesh="trunk" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" />
+            <geom name="torso_col" type="box" size="0.2808 0.086 0.09375" pos="0 0 0.01675" rgba="0.2 0.2 0.2 0" />
+            
+            <body name="abduct_fr" pos="0.21935 -0.0875 0">
+                <joint type="hinge" name="torso_to_abduct_fr_j" pos="0 0 0" axis="1 0 0" limited="true" range="-1.0472 0.872665" damping="0.01" />
+                <inertial pos="-0.001568 0.008134 0.000864" quat="0.629953 0.350191 0.35823 0.593462" mass="1.096" diaginertia="0.000983491 0.000885646 0.000800926" />
+                <geom  name="fr_abduct_vis" quat="0 1 0 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="hip" />
+                <geom  name="fr_abduct_col" size="0.041 0.04" pos="0 0.021 0" quat="0.707107 0.707107 0 0" type="cylinder" rgba="0.2 0.2 0.2 0" />
+
+                <body name="thigh_fr" pos="0 -0.037 0">
+                    <joint type="hinge" name="abduct_fr_to_thigh_fr_j" pos="0 0 0" axis="0 -1 0" limited="true" range="-3.92699 0.523599" damping="0.01" />
+                    <inertial pos="-0.000482 -0.02001 -0.031996" quat="0.999848 0.00577968 -0.0153453 -0.00595156" mass="1.528" diaginertia="0.00992391 0.00928096 0.00177389" />
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="thigh_mirror" />
+                    <geom size="0.125 0.017 0.0215" pos="0 0 -0.125" quat="0.707107 0 0.707107 0" type="box" rgba="0.2 0.2 0.2 0" />
+
+                    <body name="knee_fr" pos="0 0 -0.25">
+                        <joint type="hinge" name="thigh_fr_to_knee_fr_j" pos="0 0 0" axis="0 -1 0" limited="true" range="0.610865 2.77507" damping="0.01" />
+                        <inertial pos="-0.002196 -0.000381 -0.12338" quat="0.712765 0.000467477 -0.000119366 0.701402" mass="0.241" diaginertia="0.00619655 0.00618196 3.47683e-05" />
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.913725 0.913725 0.847059 1" mesh="calf" />
+                        <geom name='fr_knee' size="0.125 0.008 0.008" pos="0 0 -0.125" quat="0.707107 0 0.707107 0" type="box" rgba="0.913725 0.913725 0.847059 0" />
+
+                        <body name="toe_fr" pos="0.0 0.0 -0.25">
+                            <inertial pos="0 0 0" mass="0.001" />
+                            <geom name='fr_toe' size="0.027 0.014" pos="0 0 0" quat="0.707107 0.707107 0 0" rgba="0.913725 0.913725 0.847059 0" />
+                            <site name="fr_toe" pos="0 0 0"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <body name="abduct_fl" pos="0.21935 0.0875 0">
+                <joint type="hinge" name="torso_to_abduct_fl_j" pos="0 0 0" axis="1 0 0" limited="true" range="-0.872665 1.0472" damping="0.01" />
+                <inertial pos="-0.001568 -0.008134 0.000864" quat="0.593462 0.35823 0.350191 0.629953" mass="1.096" diaginertia="0.000983491 0.000885646 0.000800926" />
+                <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="hip" />
+                <geom size="0.041 0.04" pos="0 -0.021 0" quat="0.707107 0.707107 0 0" type="cylinder" rgba="0.2 0.2 0.2 0" />
+
+                <body name="thigh_fl" pos="0 0.037 0">
+                    <joint type="hinge" name="abduct_fl_to_thigh_fl_j" pos="0 0 0" axis="0 -1 0" limited="true" range="-3.92699 0.523599" damping="0.01" />
+                    <inertial pos="-0.000482 0.02001 -0.031996" quat="0.999848 -0.00577968 -0.0153453 0.00595156" mass="1.528" diaginertia="0.00992391 0.00928096 0.00177389" />
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="thigh" />
+                    <geom size="0.125 0.017 0.0215" pos="0 0 -0.125" quat="0.707107 0 0.707107 0" type="box" rgba="0.2 0.2 0.2 0" />
+
+                    <body name="knee_fl" pos="0 0 -0.25">
+                        <joint type="hinge" name="thigh_fl_to_knee_fl_j" pos="0 0 0" axis="0 -1 0" limited="true" range="0.610865 2.77507" damping="0.01" />
+                        <inertial pos="-0.002196 -0.000381 -0.12338" quat="0.712765 0.000467477 -0.000119366 0.701402" mass="0.241" diaginertia="0.00619655 0.00618196 3.47683e-05" />
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.913725 0.913725 0.847059 1" mesh="calf" />
+                        <geom name='fl_knee' size="0.125 0.008 0.008" pos="0 0 -0.125" quat="0.707107 0 0.707107 0" type="box" rgba="0.913725 0.913725 0.847059 0" />
+
+                        <body name="toe_fl" pos="0.0 0.0 -0.25">
+                            <inertial pos="0 0 0" mass="0.001" />
+                            <geom name='fl_toe' size="0.027 0.014" pos="0 0 0" quat="0.707107 0.707107 0 0" rgba="0.913725 0.913725 0.847059 0" />
+                            <site name="fl_toe" pos="0 0 0"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <body name="abduct_hr" pos="-0.21935 -0.0875 0">
+                <joint type="hinge" name="torso_to_abduct_hr_j" pos="0 0 0" axis="1 0 0" limited="true" range="-1.0472 0.872665" damping="0.01" />
+                <inertial pos="0.001568 0.008134 0.000864" quat="0.35823 0.593462 0.629953 0.350191" mass="1.096" diaginertia="0.000983491 0.000885646 0.000800926" />
+                <geom quat="0 0 0 -1" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="hip" />
+                <geom size="0.041 0.04" pos="0 0.021 0" quat="0.707107 0.707107 0 0" type="cylinder" rgba="0.2 0.2 0.2 0" />
+
+                <body name="thigh_hr" pos="0 -0.037 0">
+                    <joint type="hinge" name="abduct_hr_to_thigh_hr_j" pos="0 0 0" axis="0 -1 0" limited="true" range="-3.92699 0.523599" damping="0.01" />
+                    <inertial pos="-0.000482 -0.02001 -0.031996" quat="0.999848 0.00577968 -0.0153453 -0.00595156" mass="1.528" diaginertia="0.00992391 0.00928096 0.00177389" />
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="thigh_mirror" />
+                    <geom size="0.125 0.017 0.0215" pos="0 0 -0.125" quat="0.707107 0 0.707107 0" type="box" rgba="0.2 0.2 0.2 0" />
+
+                    <body name="knee_hr" pos="0 0 -0.25">
+                        <joint type="hinge" name="thigh_hr_to_knee_hr_j" pos="0 0 0" axis="0 -1 0" limited="true" range="0.610865 2.77507" damping="0.01" />
+                        <inertial pos="-0.002196 -0.000381 -0.12338" quat="0.712765 0.000467477 -0.000119366 0.701402" mass="0.241" diaginertia="0.00619655 0.00618196 3.47683e-05" />
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.913725 0.913725 0.847059 1" mesh="calf" />
+                        <geom name='hr_knee' size="0.125 0.008 0.008" pos="0 0 -0.125" quat="0.707107 0 0.707107 0" type="box" rgba="0.913725 0.913725 0.847059 0" />
+                        <body name="toe_hr" pos="0.0 0.0 -0.25">
+                            <inertial pos="0 0 0" mass="0.001" />
+                            <geom name='hr_toe' size="0.027 0.014" pos="0 0 0" quat="0.707107 0.707107 0 0" rgba="0.913725 0.913725 0.847059 0" />
+                            <site name="hr_toe" pos="0 0 0"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <body name="abduct_hl" pos="-0.21935 0.0875 0">
+                <joint type="hinge" name="torso_to_abduct_hl_j" pos="0 0 0" axis="1 0 0" limited="true" range="-0.872665 1.0472" damping="0.01" />
+                <inertial pos="0.001568 -0.008134 0.000864" quat="0.350191 0.629953 0.593462 0.35823" mass="1.096" diaginertia="0.000983491 0.000885646 0.000800926" />
+                <geom quat="0 0 1 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="hip" />
+                <geom size="0.041 0.04" pos="0 -0.021 0" quat="0.707107 0.707107 0 0" type="cylinder" rgba="0.2 0.2 0.2 0" />
+
+                <body name="thigh_hl" pos="0 0.037 0">
+                    <joint type="hinge" name="abduct_hl_to_thigh_hl_j" pos="0 0 0" axis="0 -1 0" limited="true" range="-3.92699 0.523599" damping="0.01" />
+                    <inertial pos="-0.000482 0.02001 -0.031996" quat="0.999848 -0.00577968 -0.0153453 0.00595156" mass="1.528" diaginertia="0.00992391 0.00928096 0.00177389" />
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="thigh" />
+                    <geom size="0.125 0.017 0.0215" pos="0 0 -0.125" quat="0.707107 0 0.707107 0" type="box" rgba="0.2 0.2 0.2 0" />
+
+                    <body name="knee_hl" pos="0 0 -0.25">
+                        <joint type="hinge" name="thigh_hl_to_knee_hl_j" pos="0 0 0" axis="0 -1 0" limited="true" range="0.610865 2.77507" damping="0.01" />
+                        <inertial pos="-0.002196 -0.000381 -0.12338" quat="0.712765 0.000467477 -0.000119366 0.701402" mass="0.241" diaginertia="0.00619655 0.00618196 3.47683e-05" />
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.913725 0.913725 0.847059 1" mesh="calf" />
+                        <geom name='hl_knee' size="0.125 0.008 0.008" pos="0 0 -0.125" quat="0.707107 0 0.707107 0" type="box" rgba="0.913725 0.913725 0.847059 0" />
+
+                        <body name="toe_hl" pos="0.0 0.0 -0.25">
+                            <inertial pos="0 0 0" mass="0.001" />
+                            <geom name='hl_toe' size="0.027 0.014" pos="0 0 0" quat="0.707107 0.707107 0 0" rgba="0.913725 0.913725 0.847059 0" />
+                            <site name="hl_toe" pos="0 0 0"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+
+    <actuator>
+        <position forcelimited="true" forcerange="-100 100" name="pos_fr_torso_to_abduct" gear="1" kp="0" joint="torso_to_abduct_fr_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_fr_abduct_to_thigh" gear="1" kp="0" joint="abduct_fr_to_thigh_fr_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_fr_thigh_to_knee" gear="1" kp="0" joint="thigh_fr_to_knee_fr_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_fl_torso_to_abduct" gear="1" kp="0" joint="torso_to_abduct_fl_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_fl_abduct_to_thigh" gear="1" kp="0" joint="abduct_fl_to_thigh_fl_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_fl_thigh_to_knee" gear="1" kp="0" joint="thigh_fl_to_knee_fl_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_hr_torso_to_abduct" gear="1" kp="0" joint="torso_to_abduct_hr_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_hr_abduct_to_thigh" gear="1" kp="0" joint="abduct_hr_to_thigh_hr_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_hr_thigh_to_knee" gear="1" kp="0" joint="thigh_hr_to_knee_hr_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_hl_torso_to_abduct" gear="1" kp="0" joint="torso_to_abduct_hl_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_hl_abduct_to_thigh" gear="1" kp="0" joint="abduct_hl_to_thigh_hl_j" />
+        <position forcelimited="true" forcerange="-100 100" name="pos_hl_thigh_to_knee" gear="1" kp="0" joint="thigh_hl_to_knee_hl_j" />
+    </actuator>
+
+    <sensor>
+        <accelerometer site="robot" name="accelerometer"/>
+        <velocimeter site="robot" name="velocimeter"/>
+        <gyro site="robot" name="gyro"/>
+    </sensor>
+
+</mujoco>

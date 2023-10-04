@@ -1,0 +1,37 @@
+# base
+name: lppo
+
+# for RL
+discount_factor: 0.99
+n_steps: 5000
+actor_lr: 3e-5
+critic_lr: 3e-4
+n_actor_iters: 20
+n_critic_iters: 20
+clip_ratio: 0.2
+max_kl: 0.01
+max_grad_norm: 1.0
+gae_coeff: 0.97
+
+# for constraints
+con_thresholds: [0.025]
+con_lambdas_lr: 3e-2
+
+# for model
+model:
+    actor:
+        mlp:
+            shape: [512, 512]
+            activation: ReLU
+        out_activation: tanh
+        log_std_init: 0.0
+    reward_critic:
+        mlp:
+            shape: [512, 512]
+            activation: ReLU
+        clip_range: [-np.inf, np.inf]
+    cost_critic:
+        mlp:
+            shape: [512, 512]
+            activation: ReLU
+        clip_range: [-np.inf, np.inf]

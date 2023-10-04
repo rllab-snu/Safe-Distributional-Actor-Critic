@@ -1,0 +1,1 @@
+python main.py --name SDAC-PointButton --seed 1 --env_name Safexp-PointButton3-v0 --gpu_idx 0 --max_kl 0.001 --cost_d 0.025 --cost_alpha 1.0 --wandb
