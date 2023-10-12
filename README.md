@@ -10,8 +10,8 @@ This is an official GitHub Repository for the following paper:
 ⚠️ As `stable-baselines3` causes the `torch` installation to be incorrect, we recommend to install `stable-baselines3` and `sb3-contrib` first, and then `torch`.
 
 - python 3.8 or greater
-- stable-baselines3
-- sb3-contrib
+- stable-baselines3==1.8.0
+- sb3-contrib==1.8.0
 - torch==1.12.1
 - wandb (Optional, just for logging)
 - scipy
