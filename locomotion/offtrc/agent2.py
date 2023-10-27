@@ -31,6 +31,14 @@ def normalize(a, maximum, minimum):
     return temp_a*a + temp_b
 
 @torch.jit.script
+def normalize2(a, maximum, minimum):
+    temp_a = 1.0/(maximum - minimum)
+    temp_b = minimum/(minimum - maximum)
+    temp_a = torch.ones_like(a)*temp_a
+    temp_b = torch.ones_like(a)*temp_b
+    return temp_a*a + temp_b
+
+@torch.jit.script
 def unnormalize(a, maximum, minimum):
     temp_a = maximum - minimum
     temp_b = minimum
