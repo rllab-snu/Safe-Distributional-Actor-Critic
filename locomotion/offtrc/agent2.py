@@ -31,14 +31,6 @@ def normalize(a, maximum, minimum):
     return temp_a*a + temp_b
 
 @torch.jit.script
-def normalize2(a, maximum, minimum):
-    temp_a = 1.0/(maximum - minimum)
-    temp_b = minimum/(minimum - maximum)
-    temp_a = torch.ones_like(a)*temp_a
-    temp_b = torch.ones_like(a)*temp_b
-    return temp_a*a + temp_b
-
-@torch.jit.script
 def unnormalize(a, maximum, minimum):
     temp_a = maximum - minimum
     temp_b = minimum
@@ -117,15 +109,15 @@ class Agent:
             objective = (g_H_inv_g - 2.0*np.dot(r_vector, lam_vector) + np.dot(lam_vector, S_mat@lam_vector))/(2.0*nu_scalar + EPS) \
                             - np.dot(lam_vector, c_vector) + nu_scalar*max_kl
             return objective
-        def dualJac(x, g_H_inv_g, r_vector, S_mat, c_vector, max_kl):
-            lam_vector = x[:-1]
-            nu_scalar = x[-1]
-            jacobian = np.zeros_like(x)
-            jacobian[:-1] = (S_mat@lam_vector - r_vector)/(nu_scalar + EPS) - c_vector
-            jacobian[-1] = max_kl - (g_H_inv_g - 2.0*np.dot(r_vector, lam_vector) + np.dot(lam_vector, S_mat@lam_vector))/(2.0*(nu_scalar**2) + EPS)
-            return jacobian
+        # def dualJac(x, g_H_inv_g, r_vector, S_mat, c_vector, max_kl):
+        #     lam_vector = x[:-1]
+        #     nu_scalar = x[-1]
+        #     jacobian = np.zeros_like(x)
+        #     jacobian[:-1] = (S_mat@lam_vector - r_vector)/(nu_scalar + EPS) - c_vector
+        #     jacobian[-1] = max_kl - (g_H_inv_g - 2.0*np.dot(r_vector, lam_vector) + np.dot(lam_vector, S_mat@lam_vector))/(2.0*(nu_scalar**2) + EPS)
+        #     return jacobian
         self.dual = dual
-        self.dualJac = dualJac
+        # self.dualJac = dualJac
 
         # declare networks
         self.policy = Policy(args).to(args.device)
