@@ -109,15 +109,15 @@ class Agent:
             objective = (g_H_inv_g - 2.0*np.dot(r_vector, lam_vector) + np.dot(lam_vector, S_mat@lam_vector))/(2.0*nu_scalar + EPS) \
                             - np.dot(lam_vector, c_vector) + nu_scalar*max_kl
             return objective
-        # def dualJac(x, g_H_inv_g, r_vector, S_mat, c_vector, max_kl):
-        #     lam_vector = x[:-1]
-        #     nu_scalar = x[-1]
-        #     jacobian = np.zeros_like(x)
-        #     jacobian[:-1] = (S_mat@lam_vector - r_vector)/(nu_scalar + EPS) - c_vector
-        #     jacobian[-1] = max_kl - (g_H_inv_g - 2.0*np.dot(r_vector, lam_vector) + np.dot(lam_vector, S_mat@lam_vector))/(2.0*(nu_scalar**2) + EPS)
-        #     return jacobian
+        def dualJac(x, g_H_inv_g, r_vector, S_mat, c_vector, max_kl):
+            lam_vector = x[:-1]
+            nu_scalar = x[-1]
+            jacobian = np.zeros_like(x)
+            jacobian[:-1] = (S_mat@lam_vector - r_vector)/(nu_scalar + EPS) - c_vector
+            jacobian[-1] = max_kl - (g_H_inv_g - 2.0*np.dot(r_vector, lam_vector) + np.dot(lam_vector, S_mat@lam_vector))/(2.0*(nu_scalar**2) + EPS)
+            return jacobian
         self.dual = dual
-        # self.dualJac = dualJac
+        self.dualJac = dualJac
 
         # declare networks
         self.policy = Policy(args).to(args.device)
@@ -163,8 +163,6 @@ class Agent:
         reward_gaes_list = []
         cost_gaes_lists = [[] for _ in range(self.num_costs)]
         cost_var_gaes_lists = [[] for _ in range(self.num_costs)]
-        mu_means_list = []
-        mu_stds_list = []
         cost_means = None
         cost_var_means = None
 
@@ -181,8 +179,8 @@ class Agent:
         actions_list += temp_actions_list
         reward_targets_list += temp_reward_targets_list
         reward_gaes_list += temp_reward_gaes_list
-        mu_means_list += temp_mu_means_list
-        mu_stds_list += temp_mu_stds_list
+        # mu_means_list += temp_mu_means_list
+        # mu_stds_list += temp_mu_stds_list
 
         # random trajectory
         temp_states_list, temp_actions_list, temp_reward_targets_list, temp_cost_targets_lists, temp_cost_var_targets_lists, \
