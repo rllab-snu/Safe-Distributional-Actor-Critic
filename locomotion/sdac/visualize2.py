@@ -21,6 +21,22 @@ def main():
     })
     draw(env_name, item_list, algo_list, fig_size, window_size, interp_steps, is_horizon=True)
 
+    env_name = "Laikago"
+    algo_list = []
+    algo_list.append({
+        'name': 'SDAC',
+        'logs': [f'results/SDAC-Laikago_s{i}' for i in [1]]
+    })
+    draw(env_name, item_list, algo_list, fig_size, window_size, interp_steps, is_horizon=True)
+
+    env_name = "Cassie"
+    algo_list = []
+    algo_list.append({
+        'name': 'SDAC',
+        'logs': [f'results/SDAC-Cassie_s{i}' for i in [1]]
+    })
+    draw(env_name, item_list, algo_list, fig_size, window_size, interp_steps, is_horizon=True)
+
 
 def draw(env_name, item_list, algo_list, fig_size, window_size, interp_steps, is_horizon=False):
     if is_horizon:
