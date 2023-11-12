@@ -58,9 +58,9 @@ def draw(env_name, item_list, algo_list, fig_size, window_size, interp_steps, is
             algo_dirs = ['{}/{}_log'.format(dir_item, item_name.replace('total_', '')) for dir_item in algo_logs]
             linspace, means, stds = parse(algo_dirs, item_name, window_size, interp_steps)
 
-            if item_name in ["cv", 'cost', 'cost_0', 'cost_1', 'cost_2']:
-                means /= 500.0
-                stds /= 500.0
+            # if item_name in ["cv", 'cost', 'cost_0', 'cost_1', 'cost_2']:
+            #     means /= 500.0
+            #     stds /= 500.0
 
             ax.plot(linspace, means, lw=2, label=algo_name)
             ax.fill_between(linspace, means - stds, means + stds, alpha=0.15)
@@ -69,7 +69,7 @@ def draw(env_name, item_list, algo_list, fig_size, window_size, interp_steps, is
 
         ax.set_xlabel('Steps')
         prefix, postfix = "", ""
-        fontsize = "x-large"
+        # fontsize = "x-large"
 
         if item_idx == 0 and not is_horizon:
             ax.legend(bbox_to_anchor=(0.0, 1.01, 1.0, 0.101), loc='lower left', ncol=3, mode="expand", borderaxespad=0.)
@@ -100,7 +100,7 @@ def draw(env_name, item_list, algo_list, fig_size, window_size, interp_steps, is
             ax.set_xlim(0, 1e7)
         ax.grid()
 
-    fig.tight_layout()
+    # fig.tight_layout()
     save_dir = "./imgs"
     item_names = '&'.join(item_list)
     env_name = env_name.replace(' ', '')
