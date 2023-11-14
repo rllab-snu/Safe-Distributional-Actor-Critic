@@ -42,6 +42,17 @@ class Value(nn.Module):
             self.critics.append(critic)
 
 
+    # def forward(self, state, action):
+    #     '''
+    #     outputs: batch_size x n_critics x n_quantiles or n_critics x n_quantiles
+    #     '''
+    #     sa = torch.cat([state, action], -1)
+    #     quantiles = []
+    #     for critic_idx in range(self.n_critics):
+    #         x = self.critics[critic_idx](sa)
+    #         quantiles.append(x)
+    #     x = torch.stack(quantiles, dim=-2)
+    #     return x
     def forward(self, state, action):
         '''
         outputs: batch_size x n_critics x n_quantiles or n_critics x n_quantiles
