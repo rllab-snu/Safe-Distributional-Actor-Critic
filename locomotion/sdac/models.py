@@ -42,17 +42,6 @@ class Value(nn.Module):
             self.critics.append(critic)
 
 
-    # def forward(self, state, action):
-    #     '''
-    #     outputs: batch_size x n_critics x n_quantiles or n_critics x n_quantiles
-    #     '''
-    #     sa = torch.cat([state, action], -1)
-    #     quantiles = []
-    #     for critic_idx in range(self.n_critics):
-    #         x = self.critics[critic_idx](sa)
-    #         quantiles.append(x)
-    #     x = torch.stack(quantiles, dim=-2)
-    #     return x
     def forward(self, state, action):
         '''
         outputs: batch_size x n_critics x n_quantiles or n_critics x n_quantiles
@@ -93,7 +82,8 @@ class Policy(nn.Module):
         x = self.act_fn(self.fc2(x))
         mean = self.fc_mean(x)
         log_std = self.fc_log_std(x)
-        log_std = torch.clamp(log_std, min=LOG_STD_MIN, max=LOG_STD_MAX)
+        # log_std = torch.clamp(log_std, min=LOG_STD_MIN, max=LOG_STD_MAX)
+        log_std = torch.clamp(log_std, min=LOG_STD_MIN, max=np.inf)
         std = torch.exp(log_std)
         return mean, log_std, std
 
