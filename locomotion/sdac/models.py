@@ -82,8 +82,7 @@ class Policy(nn.Module):
         x = self.act_fn(self.fc2(x))
         mean = self.fc_mean(x)
         log_std = self.fc_log_std(x)
-        # log_std = torch.clamp(log_std, min=LOG_STD_MIN, max=LOG_STD_MAX)
-        log_std = torch.clamp(log_std, min=LOG_STD_MIN, max=np.inf)
+        log_std = torch.clamp(log_std, min=LOG_STD_MIN, max=LOG_STD_MAX)
         std = torch.exp(log_std)
         return mean, log_std, std
 
