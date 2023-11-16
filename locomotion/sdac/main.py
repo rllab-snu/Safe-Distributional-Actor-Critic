@@ -6,7 +6,8 @@ PATH = os.getcwd()
 for dir_idx, dir_name in enumerate(PATH.split('/')):
     dir_path = '/'.join(PATH.split('/')[:(dir_idx+1)])
     file_list = [os.path.basename(sub_dir) for sub_dir in glob.glob(f"{dir_path}/.*")]
-    if '.git_package' in file_list:
+    # if '.git_package' in file_list:
+    if '.git' in file_list:
         PATH = dir_path
         break
 if not PATH in sys.path:
