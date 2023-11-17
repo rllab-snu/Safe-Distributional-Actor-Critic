@@ -6,8 +6,7 @@ PATH = os.getcwd()
 for dir_idx, dir_name in enumerate(PATH.split('/')):
     dir_path = '/'.join(PATH.split('/')[:(dir_idx+1)])
     file_list = [os.path.basename(sub_dir) for sub_dir in glob.glob(f"{dir_path}/.*")]
-    # if '.git_package' in file_list:
-    if '.git' in file_list:
+    if '.git_package' in file_list:
         PATH = dir_path
         break
 if not PATH in sys.path:
@@ -107,7 +106,8 @@ def train(args):
     args.action_dim = vec_env.action_space.shape[0]
     args.action_bound_min = vec_env.action_space.low
     args.action_bound_max = vec_env.action_space.high
-    args.num_costs = vec_env.num_costs
+    # args.num_costs = vec_env.num_costs
+    args.cost_dim = vec_env.cost_dim
 
     # define agent
     agent = Agent(args)
