@@ -297,56 +297,6 @@ def test(args):
 
         print(f"score : {score:.3f}, costs: {costs}")
 
-
-def video_test(args):
-    from agent import EvalAgent as Agent
-
-    # define Environment
-    env = Env(args.env_name, args.seed, args.max_episode_steps)
-    obs_rms = RunningMeanStd(args.save_dir, env.observation_space.shape[0])
-    episodes = int(10)
-
-    # set args value for env
-    args.obs_dim = env.observation_space.shape[0]
-    args.action_dim = env.action_space.shape[0]
-    args.action_bound_min = env.action_space.low
-    args.action_bound_max = env.action_space.high
-    args.num_costs = env.num_costs
-
-    # define agent
-    agent = Agent(args)
-
-    for episode in range(episodes):
-        obs = env.reset()
-        print(f"[env] lin vel command: {env.cmd_lin_vel[:2]},\tang vel command: {env.cmd_ang_vel[2]}")
-        obs = obs_rms.normalize(obs)
-        done = False
-        score = 0.0
-        costs = [0.0]*args.num_costs
-        step = 0
-        start_t = time.time()
-        global_t = 0.0
-        elapsed_t = 0.0
-        for _ in range(args.max_episode_steps):
-            step += 1
-            with torch.no_grad():
-                obs_tensor = torch.tensor(obs, device=args.device, dtype=torch.float32)
-                action_tensor = agent.getAction(obs_tensor, False)[0]
-                action = action_tensor.detach().cpu().numpy()
-            obs, reward, done, info = env.step(action)
-            obs = obs_rms.normalize(obs)
-            env.render()
-            score += reward
-            for cost_idx in range(args.num_costs):
-                costs[cost_idx] += info['costs'][cost_idx]
-            global_t += env.env_dt
-            if done: break
-
-            elapsed_t = time.time() - start_t
-            if elapsed_t < global_t:
-                time.sleep(global_t - elapsed_t)
-
-        print(f"score : {score:.3f}, costs: {costs}")
 if __name__ == "__main__":
     parser = getParser()
     args = parser.parse_args()
